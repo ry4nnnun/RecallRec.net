@@ -1,14 +1,238 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Recall</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Nunito:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a chunky toy-box page — airmail-striped bands frame each section, the cube logo leads, content sits in one readable column with a two-up grid for features. */
+:root {
+  --bg: #eef5fc;
+  --surface: #ffffff;
+  --ink: #14233d;
+  --muted: #51627e;
+  --sky: #7fd3ff;
+  --peri: #6a96d3;
+  --deep: #2f5aa8;
+  --stripe-a: #5fbef2;
+  --stripe-b: #ffffff;
+  --line: #d3e2f2;
+  --code-bg: #14233d;
+  --code-fg: #d9ecff;
+  --display: "Dela Gothic One", "Arial Black", Impact, sans-serif;
+  --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a2e; --surface: #16253f; --ink: #e8f2ff; --muted: #a7bbd8;
+    --sky: #7fd3ff; --peri: #8fb3ea; --deep: #9cc6ff;
+    --stripe-a: #4aa9de; --stripe-b: #0f1a2e; --line: #26395a;
+    --code-bg: #0a1222; --code-fg: #cfe6ff; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1a2e; --surface: #16253f; --ink: #e8f2ff; --muted: #a7bbd8;
+  --sky: #7fd3ff; --peri: #8fb3ea; --deep: #9cc6ff;
+  --stripe-a: #4aa9de; --stripe-b: #0f1a2e; --line: #26395a;
+  --code-bg: #0a1222; --code-fg: #cfe6ff; color-scheme: dark;
+}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Website</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>Welcome to my website!</h1>
-  <p>My own domain. My own code.</p>
-</body>
-</html>
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 400 17px/1.6 var(--body);
+}
+.wrap {
+  max-width: 980px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.airmail {
+  height: 14px;
+  background: repeating-linear-gradient(-45deg, var(--stripe-a) 0 14px, var(--stripe-b) 14px 28px);
+}
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.1; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: var(--deep); }
+:focus-visible { outline: 3px solid var(--peri); outline-offset: 3px; border-radius: 4px; }
+
+/* hero */
+.hero { padding-block: 56px 48px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+.hero > * { min-width: 0; }
+.eyebrow { font: 600 13px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--peri); }
+.hero h1 { font-size: clamp(40px, 7vw, 72px); margin-top: 14px; color: var(--ink); }
+.hero h1 span { color: var(--peri); }
+.lede { margin-top: 18px; font-size: 19px; color: var(--muted); max-width: 46ch; }
+.cta { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 800 16px/1 var(--body); text-decoration: none;
+  padding: 14px 20px; border-radius: 14px; border: 2px solid var(--ink);
+  background: var(--sky); color: #0d1b33; box-shadow: 0 5px 0 var(--ink);
+  transition: transform .12s, box-shadow .12s;
+}
+.btn:hover { transform: translateY(2px); box-shadow: 0 3px 0 var(--ink); }
+.btn.ghost { background: var(--surface); color: var(--ink); }
+.logo-stage { display: grid; place-items: center; }
+.logo-stage img { width: min(100%, 380px); height: auto; filter: drop-shadow(0 14px 26px rgba(47, 90, 168, .35)); animation: bob 5s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-10px) rotate(-1.5deg); } }
+
+/* sections */
+section { padding-block: 56px; }
+.section-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.section-head h2 { font-size: clamp(28px, 4.4vw, 40px); }
+.section-head p { color: var(--muted); max-width: 60ch; }
+
+.features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.feature {
+  background: var(--surface); border: 2px solid var(--line); border-radius: 18px;
+  padding: 22px; display: flex; flex-direction: column; gap: 8px;
+}
+.feature h3 { font-size: 21px; }
+.feature p { color: var(--muted); }
+.tag { align-self: flex-start; font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--deep); background: color-mix(in srgb, var(--sky) 28%, transparent); padding: 6px 9px; border-radius: 999px; }
+
+/* mystery box */
+.box-band { background: var(--surface); border-block: 2px solid var(--line); }
+.box-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 36px; align-items: center; }
+.box-grid > * { min-width: 0; }
+.parcel {
+  aspect-ratio: 1 / 1; max-width: 320px; width: 100%; margin: 0 auto; position: relative;
+  border-radius: 20px; padding: 14px;
+  background: repeating-linear-gradient(-45deg, var(--stripe-a) 0 16px, #ffffff 16px 32px);
+}
+.parcel-inner {
+  height: 100%; border-radius: 12px; background: #eceff3;
+  display: grid; place-items: center; text-align: center; padding: 18px; color: #1d3c6e;
+}
+.parcel-inner b { font: 400 30px/1 var(--display); letter-spacing: .02em; color: #3aa6e6; }
+.stamp { position: absolute; right: 26px; top: 26px; width: 52px; height: 60px; background: #fff; border: 3px dashed #5560a8; display: grid; place-items: center; color: #e2453f; font-size: 30px; transform: rotate(6deg); }
+.loot { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.loot li { background: var(--bg); border: 2px solid var(--line); border-radius: 999px; padding: 6px 12px; font-weight: 600; font-size: 15px; }
+
+/* commands */
+.terminal { background: var(--code-bg); color: var(--code-fg); border-radius: 16px; padding: 20px; font: 500 15px/1.75 var(--mono); overflow-x: auto; }
+.terminal .cmd { color: #7fd3ff; }
+.terminal .note { color: #8aa3c6; }
+.terminal .reply { color: #b7f5c8; }
+.terminal div { white-space: pre; }
+
+/* join */
+.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 14px; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 48px 1fr; gap: 14px; align-items: start; background: var(--surface); border: 2px solid var(--line); border-radius: 16px; padding: 16px; }
+.steps li::before { content: counter(step); font: 400 22px/48px var(--display); text-align: center; width: 48px; height: 48px; border-radius: 12px; background: var(--sky); color: #0d1b33; }
+.steps h3 { font-size: 18px; }
+.steps p { color: var(--muted); }
+code { font-family: var(--mono); font-size: .92em; background: color-mix(in srgb, var(--sky) 22%, transparent); padding: 1px 6px; border-radius: 6px; }
+
+footer { padding-block: 36px 48px; color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+
+@media (max-width: 760px) {
+  .hero, .box-grid { grid-template-columns: 1fr; }
+  .hero { padding-block: 36px 32px; }
+  .logo-stage { order: -1; }
+  .features { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-stage img { animation: none; }
+  .btn { transition: none; }
+}
+</style>
+
+<div class="airmail" aria-hidden="true"></div>
+
+<header class="wrap hero">
+  <div>
+    <p class="eyebrow">Rec Room 2026 · community revival</p>
+    <h1>Rec Room is back. <span>We call it Recall.</span></h1>
+    <p class="lede">A private server that brings the 2026 Rec Room client back to life, with friends, voice chat, rooms and a few surprises of our own.</p>
+    <div class="cta">
+      <a class="btn" href="#join">Join with the friend kit</a>
+      <a class="btn ghost" href="#features">What's inside</a>
+    </div>
+  </div>
+  <div class="logo-stage">
+    <img src="data:image/png;base64,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" alt="The Recall logo: the word RECALL above a light blue cube marked R">
+  </div>
+</header>
+
+<div class="airmail" aria-hidden="true"></div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">What's inside</p>
+      <h2>Your old Rec Room, with a fresh coat of blue</h2>
+      <p>Recall runs the real 2026 game against our own server, so the rooms, avatars and inventions you remember all work, and we can add things the original never had.</p>
+    </div>
+    <div class="features">
+      <article class="feature"><span class="tag">Multiplayer</span><h3>Play together again</h3><p>Join friends in the same room instance, talk over voice chat and party up like it's 2026.</p></article>
+      <article class="feature"><span class="tag">Look</span><h3>The Recall theme</h3><p>Every menu, button and watch screen has traded the orange for Recall periwinkle, with our cube logo where the old one used to be.</p></article>
+      <article class="feature"><span class="tag">Daily</span><h3>A box every day</h3><p>Log in once a day and a gift box with 250 tokens is waiting for you, reset at midnight UTC.</p></article>
+      <article class="feature"><span class="tag">Creators</span><h3>Build without the old limits</h3><p>Rooms, Circuits, inventions and room currencies all work, and staff rooms can hand out real token prizes with the Award Currency chip.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="box-band" aria-labelledby="box-title">
+  <div class="wrap box-grid">
+    <div class="parcel" aria-hidden="true">
+      <div class="parcel-inner"><div><b>RECALL</b><br>mystery box</div></div>
+      <div class="stamp">★</div>
+    </div>
+    <div>
+      <p class="eyebrow">New in Recall</p>
+      <h2 id="box-title" style="font-size: clamp(28px, 4.4vw, 40px); margin-top: 10px;">The Recall mystery box</h2>
+      <p style="margin-top: 14px; color: var(--muted);">Our own cardboard box, airmail stripes and all. Open one and you get a random treat from the store: something to eat, something to play with, or something to wear.</p>
+      <ul class="loot" aria-label="What a mystery box can hold">
+        <li>Pepperoni Pizza</li><li>Glazed Donuts</li><li>Chocolate Cake</li><li>Taro Bubble Tea</li><li>Popcorn</li><li>Sushi</li><li>Bubble Wand</li><li>Bubble Blaster</li><li>Basket of Tomatoes</li><li>2,469 pieces of clothing</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Staff tools</p>
+      <h2>Commands that make the server feel alive</h2>
+      <p>Staff can type these in any DM or party chat. The Coach answers with what happened.</p>
+    </div>
+    <div class="terminal" role="region" aria-label="Example staff chat commands" tabindex="0">
+<div><span class="cmd">/announce</span> Paintball night starts in 10 minutes!</div>
+<div class="note">  → Coach message to everyone online</div>
+<div><span class="cmd">/gift</span> @Coach 500 Thanks for helping out!</div>
+<div class="note">  → a token box for one player</div>
+<div><span class="cmd">/giftall</span> 100 Happy weekend from the Recall team</div>
+<div class="note">  → a token box for everyone online</div>
+<div><span class="cmd">/randomgift</span> Coach</div>
+<div class="reply">  Coach: Sent @Coach a mystery box: Glazed Donuts.</div>
+<div><span class="cmd">/maintenance</span> 5</div>
+<div class="note">  → the game's "server restarting soon" warning</div>
+    </div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Get in</p>
+      <h2>Join in four steps</h2>
+      <p>Ask the server owner for the friend kit. It has the patch files and a settings file that already points at our server.</p>
+    </div>
+    <ol class="steps">
+      <li><div><h3>Install Rec Room 2026</h3><p>You need the 2026 client, build <code>20260323.14</code>. Other versions won't connect.</p></div></li>
+      <li><div><h3>Drop in the friend kit</h3><p>Put <code>2026patch.dll</code>, <code>Injector.exe</code>, <code>2026patch.ini</code> and the two launchers in the folder with <code>RecRoom.exe</code>.</p></div></li>
+      <li><div><h3>Launch through the patch</h3><p>Run <code>RecRoomScreen.bat</code> to play on a monitor, or <code>RecRoomVR.bat</code> for VR. The launcher starts the patch before the game.</p></div></li>
+      <li><div><h3>Say hi in the Rec Center</h3><p>Make an account the first time you load in, then find us in the Rec Center or check the watch for friends online.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<div class="airmail" aria-hidden="true"></div>
+<footer class="wrap">
+  <span>Recall is a fan-run community server. It isn't made or endorsed by Rec Room Inc.</span>
+  <span>Made with blue paint and spare tokens.</span>
+</footer>
+
+</body></html>

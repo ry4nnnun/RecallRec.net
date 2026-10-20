@@ -6,92 +6,98 @@
 		<title>Recall</title>
 		<meta
 			name="description"
-			content="Recall is a community revival of the 2026 Rec Room client. Browse rooms to try and photos taken in game."
+			content="Recall is a community revival of the 2026 Rec Room client. See what players are up to right now and find a room to jump into."
 		/>
 		<link rel="icon" href="logo.png" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap"
+			rel="stylesheet"
+		/>
 		<link rel="stylesheet" href="styles.css" />
 	</head>
 	<body>
-		<header class="bar">
-			<a class="brand" href="#top">
-				<img src="logo.png" alt="" width="34" height="34" />
-				<span>Recall</span>
-			</a>
-			<nav>
+		<header class="topbar">
+			<a class="brand" href="#top"><img src="logo.png" alt="Recall" /></a>
+			<nav class="topnav">
 				<a href="#rooms">Rooms</a>
-				<a href="#photos">Photos</a>
+				<a href="#feed">Photos</a>
 				<a href="#join">Join</a>
 			</nav>
+			<div class="topbar-right">
+				<a class="pill ghost" href="#join">Log in</a>
+				<a class="pill solid" href="#join">Download</a>
+			</div>
 		</header>
 
+		<div class="notice" data-notice>
+			<p>
+				Recall is a community revival of the 2026 client, run by players. Not affiliated with
+				or endorsed by Rec Room Inc. Ask in the Recall chat for the launcher.
+			</p>
+			<button type="button" aria-label="Dismiss" data-notice-close>&times;</button>
+		</div>
+
 		<main id="top">
-			<section class="hero">
-				<div class="hero-copy">
-					<p class="eyebrow">Community revival &middot; 2026 client</p>
-					<h1>Hang out in<br /><span>Recall</span></h1>
-					<p class="lede">
-						A private server for the 2026 build, run by and for friends. Rooms, photos and
-						voice chat &mdash; all back online.
-					</p>
-					<div class="cta">
-						<a class="btn primary" href="#rooms">Find a room</a>
-						<a class="btn" href="#join">How to join</a>
-					</div>
-					<dl class="stats">
-						<div><dt>Rooms live</dt><dd data-stat="rooms">&mdash;</dd></div>
-						<div><dt>Photos taken</dt><dd data-stat="photos">&mdash;</dd></div>
-						<div><dt>Platforms</dt><dd>PC &middot; VR &middot; Quest</dd></div>
-					</dl>
-				</div>
-				<div class="hero-art" aria-hidden="true">
-					<div class="shot shot-a"></div>
-					<div class="shot shot-b"></div>
-					<div class="shot shot-c"></div>
-				</div>
+			<section class="promos">
+				<a class="promo" href="#rooms">
+					<div class="promo-art art-rooms"><span>Rooms</span></div>
+					<p>Browse what's open &rsaquo;</p>
+				</a>
+				<a class="promo" href="#join">
+					<div class="promo-art art-play"><span>Play Free</span></div>
+					<p>Get the Recall launcher &rsaquo;</p>
+				</a>
+				<a class="promo" href="#feed">
+					<div class="promo-art art-cam"><span>Camera Roll</span></div>
+					<p>Photos from the server &rsaquo;</p>
+				</a>
 			</section>
 
-			<section id="rooms" class="block">
-				<div class="block-head">
-					<div>
-						<h2>Rooms to try</h2>
-						<p>A fresh handful every time you load the page.</p>
+			<div class="tabs">
+				<button class="tab is-on" type="button" data-tab="feed">Photos</button>
+				<button class="tab" type="button" data-tab="rooms">Rooms</button>
+			</div>
+
+			<div class="columns">
+				<aside class="side" id="rooms">
+					<h2>Featured Rooms</h2>
+					<div class="side-list" data-side-rooms></div>
+					<button class="pill ghost wide" type="button" data-reroll>Show me others</button>
+				</aside>
+
+				<section class="feed" id="feed">
+					<div class="feed-head">
+						<h2>Happening right now in Recall</h2>
+						<label class="live">
+							<input type="checkbox" data-live checked />
+							<span>Live</span>
+						</label>
 					</div>
-					<button class="btn" type="button" data-reroll>Shuffle</button>
-				</div>
-				<div class="grid rooms" data-rooms>
-					<p class="empty">Loading rooms&hellip;</p>
-				</div>
+					<div data-feed>
+						<p class="empty">Loading photos&hellip;</p>
+					</div>
+				</section>
+			</div>
+
+			<section class="rooms-grid-wrap" data-rooms-panel hidden>
+				<h2>All rooms on the server</h2>
+				<div class="rooms-grid" data-rooms></div>
 			</section>
 
-			<section id="photos" class="block">
-				<div class="block-head">
-					<div>
-						<h2>From the camera roll</h2>
-						<p>Shots taken in game on the server, picked at random.</p>
-					</div>
-					<button class="btn" type="button" data-shuffle-photos>Shuffle</button>
-				</div>
-				<div class="grid photos" data-photos>
-					<p class="empty">Loading photos&hellip;</p>
-				</div>
-			</section>
-
-			<section id="join" class="block join">
+			<section id="join" class="join">
 				<h2>Joining Recall</h2>
 				<ol>
-					<li>Install the patched 2026 client from the Recall launcher.</li>
-					<li>Launch the game &mdash; it signs you in against the Recall server.</li>
-					<li>Pick a room above, or meet everyone in the Rec Center.</li>
+					<li>Get the Recall launcher and the patched 2026 client.</li>
+					<li>Start the game &mdash; it signs you in on the Recall server.</li>
+					<li>Meet everyone in the Rec Center, or pick a room from the list.</li>
 				</ol>
-				<p class="note">
-					Ask in the Recall chat for the launcher and server address. Nothing here is
-					affiliated with or endorsed by Rec Room Inc.
-				</p>
 			</section>
 		</main>
 
 		<footer>
-			<p>Recall &mdash; a fan-run revival. Built by the Recall community.</p>
+			<p>Recall &mdash; a fan-run revival of the 2026 client.</p>
 			<p><a href="https://github.com/ry4nnnun/RecallRec.net">Source on GitHub</a></p>
 		</footer>
 

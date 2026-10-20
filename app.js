@@ -1,110 +1,191 @@
-// Front page behaviour: pick a random set of rooms and photos from data.json on every
-// load, with Shuffle buttons to re-roll. Everything is static — data.json is a snapshot
-// of the Recall server, rebuilt by build.py.
+// Front page behaviour. data.json is a snapshot of the Recall server: public camera
+// photos (who took them, which room, their caption) and the public room list. The feed
+// shows a random set, swaps a post every few seconds while "Live" is on, and re-reads
+// data.json now and then so photos taken since the page loaded turn up on their own.
 
-const ROOM_COUNT = 8
-const PHOTO_COUNT = 9
+const FEED_SIZE = 6
+const SIDE_ROOMS = 5
+const SWAP_MS = 9000
+const REFETCH_MS = 60000
 
-const pick = (list, n) => {
+let data = { rooms: [], photos: [] }
+let shown = []
+
+const shuffled = (list) => {
 	const copy = [...list]
 	for (let i = copy.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1))
 		;[copy[i], copy[j]] = [copy[j], copy[i]]
 	}
-	return copy.slice(0, n)
+	return copy
 }
 
-// Deterministic per-room artwork, so a room keeps its colours between shuffles.
-const artFor = (name) => {
+// Stable colour per name, so a room or player keeps its look between shuffles.
+const hueOf = (text) => {
 	let hash = 0
-	for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) % 360
-	const a = hash
-	const b = (hash + 48) % 360
-	return `linear-gradient(140deg, hsl(${a} 72% 46%), hsl(${b} 68% 28%))`
+	for (const ch of text) hash = (hash * 31 + ch.charCodeAt(0)) % 360
+	return hash
+}
+const artOf = (text) => {
+	const h = hueOf(text)
+	return `linear-gradient(145deg, hsl(${h} 58% 42%), hsl(${(h + 40) % 360} 55% 26%))`
 }
 
-const plural = (n, word) => `${n.toLocaleString()} ${word}${n === 1 ? '' : 's'}`
+const el = (tag, className, text) => {
+	const node = document.createElement(tag)
+	if (className) node.className = className
+	if (text !== undefined) node.textContent = text
+	return node
+}
+
+const sinceText = (iso) => {
+	const days = Math.floor((Date.now() - Date.parse(iso + 'T12:00:00Z')) / 86400000)
+	if (!Number.isFinite(days)) return iso
+	if (days <= 0) return 'today'
+	if (days === 1) return 'yesterday'
+	if (days < 30) return `${days} days ago`
+	return iso
+}
+
+/* ---------- feed ---------- */
+
+function postNode(photo, openPhoto) {
+	const post = el('article', 'post')
+
+	const top = el('div', 'post-top')
+	const avatar = el('div', 'avatar', (photo.author[0] || '?').toUpperCase())
+	avatar.style.setProperty('--art', artOf(photo.author))
+	const who = el('div', 'who')
+	const name = el('div', 'name', photo.author)
+	name.append(el('span', 'handle', `@${photo.author}`))
+	who.append(name)
+	if (photo.roomRef) who.append(el('div', 'where', photo.roomRef))
+	top.append(avatar, who)
+
+	const shot = el('button', 'post-shot')
+	shot.type = 'button'
+	const img = el('img')
+	img.src = photo.src
+	img.loading = 'lazy'
+	img.alt = photo.caption || `Photo by ${photo.author}${photo.room ? ` in ${photo.room}` : ''}`
+	shot.append(img)
+	shot.addEventListener('click', () => openPhoto(photo))
+
+	const foot = el('div', 'post-foot')
+	foot.append(el('div', 'cheers', `${photo.cheers} cheer${photo.cheers === 1 ? '' : 's'}`))
+	if (photo.caption) foot.append(el('p', 'caption', photo.caption))
+	foot.append(el('p', 'stamp', sinceText(photo.taken)))
+
+	post.append(top, shot, foot)
+	return post
+}
+
+/* ---------- rooms ---------- */
+
+function sideRoom(room) {
+	const wrap = el('div', 'side-room')
+	const art = el('div', 'art')
+	art.style.setProperty('--art', artOf(room.name))
+	art.append(el('span', null, room.name))
+	wrap.append(art, el('p', 'name', `^${room.name}`), el('p', 'by', room.kind))
+	return wrap
+}
 
 function roomCard(room) {
-	const card = document.createElement('div')
-	card.className = 'room'
-	card.style.setProperty('--art', artFor(room.name))
-	const meta = [plural(room.visits, 'visit')]
-	if (room.maxPlayers) meta.push(`up to ${room.maxPlayers} players`)
-	card.innerHTML = `
-		<span class="kind">${room.kind}</span>
-		<h3></h3>
-		<p class="meta"></p>
-		<div class="tags"></div>`
-	card.querySelector('h3').textContent = room.name
-	card.querySelector('.meta').textContent = meta.join(' · ')
-	for (const tag of room.platforms) {
-		const el = document.createElement('span')
-		el.textContent = tag
-		card.querySelector('.tags').append(el)
-	}
+	const card = el('article', 'room-card')
+	const art = el('div', 'art')
+	art.style.setProperty('--art', artOf(room.name))
+	art.append(el('span', null, room.name))
+	const body = el('div', 'body')
+	body.append(el('h3', null, `^${room.name}`))
+	const meta = [`${room.visits.toLocaleString()} visit${room.visits === 1 ? '' : 's'}`]
+	if (room.maxPlayers) meta.push(`up to ${room.maxPlayers}`)
+	body.append(el('p', 'meta', meta.join(' · ')))
+	const tags = el('div', 'tags')
+	for (const tag of room.platforms) tags.append(el('span', null, tag))
+	body.append(tags)
+	card.append(art, body)
 	return card
 }
 
-function photoCard(photo, onOpen) {
-	const button = document.createElement('button')
-	button.className = 'photo'
-	button.type = 'button'
-	const img = document.createElement('img')
-	img.src = photo.src
-	img.alt = `Photo taken in Recall on ${photo.taken}`
-	img.loading = 'lazy'
-	const label = document.createElement('span')
-	label.textContent = photo.taken
-	button.append(img, label)
-	button.addEventListener('click', () => onOpen(photo))
-	return button
+/* ---------- wiring ---------- */
+
+const feedEl = document.querySelector('[data-feed]')
+const sideEl = document.querySelector('[data-side-rooms]')
+const roomsEl = document.querySelector('[data-rooms]')
+const roomsPanel = document.querySelector('[data-rooms-panel]')
+const columns = document.querySelector('.columns')
+const liveBox = document.querySelector('[data-live]')
+const lightbox = document.querySelector('[data-lightbox]')
+const lightboxImg = lightbox.querySelector('img')
+
+const openPhoto = (photo) => {
+	lightboxImg.src = photo.src
+	lightboxImg.alt = photo.caption || `Photo by ${photo.author}`
+	lightbox.hidden = false
 }
-
-function render(data) {
-	const roomsEl = document.querySelector('[data-rooms]')
-	const photosEl = document.querySelector('[data-photos]')
-	const lightbox = document.querySelector('[data-lightbox]')
-	const lightboxImg = lightbox.querySelector('img')
-
-	const openPhoto = (photo) => {
-		lightboxImg.src = photo.src
-		lightboxImg.alt = `Photo taken in Recall on ${photo.taken}`
-		lightbox.hidden = false
-	}
-	const closePhoto = () => {
-		lightbox.hidden = true
-		lightboxImg.src = ''
-	}
-	lightbox.addEventListener('click', closePhoto)
-	document.addEventListener('keydown', (e) => e.key === 'Escape' && closePhoto())
-
-	const drawRooms = () => {
-		roomsEl.replaceChildren(...pick(data.rooms, ROOM_COUNT).map(roomCard))
-	}
-	const drawPhotos = () => {
-		const chosen = pick(data.photos, PHOTO_COUNT)
-		photosEl.replaceChildren(...chosen.map((p) => photoCard(p, openPhoto)))
-		// The hero collage borrows the first few shots.
-		document.querySelectorAll('.shot').forEach((shot, i) => {
-			const photo = chosen[i] ?? data.photos[i]
-			if (photo) shot.style.backgroundImage = `url("${photo.src}")`
-		})
-	}
-
-	document.querySelector('[data-reroll]').addEventListener('click', drawRooms)
-	document.querySelector('[data-shuffle-photos]').addEventListener('click', drawPhotos)
-	document.querySelector('[data-stat="rooms"]').textContent = data.rooms.length
-	document.querySelector('[data-stat="photos"]').textContent = data.photos.length
-	drawRooms()
-	drawPhotos()
+const closePhoto = () => {
+	lightbox.hidden = true
+	lightboxImg.src = ''
 }
+lightbox.addEventListener('click', closePhoto)
+document.addEventListener('keydown', (e) => e.key === 'Escape' && closePhoto())
 
-fetch('data.json')
-	.then((r) => r.json())
-	.then(render)
-	.catch(() => {
-		for (const el of document.querySelectorAll('.empty')) {
-			el.textContent = 'Could not load the room list.'
-		}
+document.querySelector('[data-notice-close]').addEventListener('click', () => {
+	document.querySelector('[data-notice]').hidden = true
+})
+
+for (const tab of document.querySelectorAll('.tab')) {
+	tab.addEventListener('click', () => {
+		for (const other of document.querySelectorAll('.tab')) other.classList.toggle('is-on', other === tab)
+		const roomsView = tab.dataset.tab === 'rooms'
+		roomsPanel.hidden = !roomsView
+		columns.hidden = roomsView
 	})
+}
+
+function drawFeed() {
+	if (!data.photos.length) {
+		feedEl.replaceChildren(el('p', 'empty', 'No photos have been shared yet.'))
+		return
+	}
+	shown = shuffled(data.photos).slice(0, FEED_SIZE)
+	feedEl.replaceChildren(...shown.map((p) => postNode(p, openPhoto)))
+}
+
+function drawRooms() {
+	sideEl.replaceChildren(...shuffled(data.rooms).slice(0, SIDE_ROOMS).map(sideRoom))
+	roomsEl.replaceChildren(...data.rooms.map(roomCard))
+}
+
+// Swap one post for a photo that isn't on screen, so the feed keeps moving.
+function swapOne() {
+	if (!liveBox.checked || document.hidden || data.photos.length <= FEED_SIZE) return
+	const fresh = shuffled(data.photos).find((p) => !shown.some((s) => s.src === p.src))
+	if (!fresh) return
+	const slot = Math.floor(Math.random() * shown.length)
+	shown[slot] = fresh
+	feedEl.children[slot]?.replaceWith(postNode(fresh, openPhoto))
+}
+
+document.querySelector('[data-reroll]').addEventListener('click', drawRooms)
+
+async function load(first) {
+	try {
+		const fetched = await (await fetch(`data.json?t=${Date.now()}`, { cache: 'no-store' })).json()
+		const isNew = fetched.photos.length !== data.photos.length
+		data = fetched
+		if (first) {
+			drawFeed()
+			drawRooms()
+		} else if (isNew) {
+			drawFeed() // new photos arrived on the server
+		}
+	} catch {
+		if (first) feedEl.replaceChildren(el('p', 'empty', 'Could not reach the photo feed.'))
+	}
+}
+
+load(true)
+setInterval(swapOne, SWAP_MS)
+setInterval(() => load(false), REFETCH_MS)

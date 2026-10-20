@@ -266,14 +266,18 @@ setInterval(() => load(false), REFETCH_MS)
 /* Comments live on the Recall server, so they need it reachable from the browser (see
  * site.js). Until then reads come back empty and posting reports why. */
 
-const commentsUrl = (id) => `${serviceHost('api')}/api/images/v1/${id}/comments`
+const commentsUrl = (id) => service('api', `/api/images/v1/${id}/comments`)
 
 async function loadComments(id) {
 	try {
 		const response = await fetch(commentsUrl(id), { cache: 'no-store' })
 		if (!response.ok) return []
 		const body = await response.json()
-		return Array.isArray(body) ? body : (body.comments ?? [])
+		// The server serves a photo's comments PascalCase, as it serves the photo itself.
+		return (Array.isArray(body) ? body : []).map((row) => ({
+			author: row.Author ?? 'player',
+			text: row.Body ?? '',
+		}))
 	} catch {
 		return []
 	}

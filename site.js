@@ -1,18 +1,17 @@
 // Shared bits: where the Recall server lives, and the signed-in session.
 //
-// The pages talk to the server directly from the browser. That needs the server to be
-// reachable over HTTPS with a certificate the browser trusts — a self-signed dev
-// certificate is refused before any request is sent, and the page falls back to the
-// signed-out view. Point API_BASE at the server once it is published properly.
+// The pages talk to the Recall server directly from the browser, so it has to answer on
+// HTTPS with a certificate the browser trusts — the server's own dev certificate is
+// self-signed and would be refused before any request went out. It is published through a
+// Cloudflare tunnel instead, and one hostname reaches every service: `/-/<service>/<path>`
+// names the service in the path, which the server's router strips.
+//
+// A quick tunnel gets a new name each time it is restarted. When that happens, put the new
+// one here and rebuild.
 
-const API_BASE = 'https://ns.213-10-98-40.sslip.io:8787'
+const API_BASE = 'https://roses-span-trainers-feet.trycloudflare.com'
 
-// Discovery names each service; auth and the API live on their own subdomains.
-const serviceHost = (name) => {
-	const url = new URL(API_BASE)
-	url.hostname = url.hostname.replace(/^[^.]+\./, `${name}.`)
-	return url.origin
-}
+const service = (name, path) => `${API_BASE}/-/${name}${path}`
 
 const SESSION_KEY = 'recall.session'
 
@@ -40,7 +39,7 @@ const session = {
 async function signIn(username, password) {
 	let response
 	try {
-		response = await fetch(`${serviceHost('auth')}/connect/token`, {
+		response = await fetch(service('auth', '/connect/token'), {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
 			body: JSON.stringify({ grant_type: 'password', username, password, client_id: 'web' }),
@@ -52,7 +51,14 @@ async function signIn(username, password) {
 	}
 	const body = await response.json().catch(() => ({}))
 	if (!response.ok) {
-		throw new Error(body.error_description || body.error || 'That username and password did not work.')
+		// The server answers an unknown username with the same "account_id or username is
+		// required" it gives a request that named nobody at all; both read as a bad login here.
+		const reason = String(body.error_description || body.error || '')
+		throw new Error(
+			/required|invalid_grant|password/i.test(reason)
+				? 'That username and password did not work.'
+				: reason || 'Could not log in.'
+		)
 	}
 	return { username, token: body.access_token, accountId: body.account_id ?? null }
 }

@@ -3,7 +3,7 @@
 // shows a random set, swaps a post every few seconds while "Live" is on, and re-reads
 // data.json now and then so photos taken since the page loaded turn up on their own.
 
-const FEED_SIZE = 6
+const FEED_SIZE = 15
 const SIDE_ROOMS = 5
 const SWAP_MS = 9000
 const REFETCH_MS = 60000

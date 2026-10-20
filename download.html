@@ -1,10 +1,14 @@
+```html
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Download &middot; Recall</title>
-		<meta name="description" content="Get Recall on Quest or on PC through Steam." />
+		<meta
+			name="description"
+			content="Get Recall on Quest or on PC through Steam."
+		/>
 		<link rel="icon" href="logo.png" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,24 +18,38 @@
 		/>
 		<link rel="stylesheet" href="styles.css" />
 	</head>
+
 	<body>
 		<header class="topbar">
-			<a class="brand" href="index.html"><img src="logo.png" alt="Recall" /></a>
+			<a class="brand" href="index.html">
+				<img src="logo.png" alt="Recall" />
+			</a>
+
 			<nav class="topnav">
 				<a href="index.html#rooms">Rooms</a>
 				<a href="index.html#feed">Photos</a>
 				<a href="download.html" class="is-on">Download</a>
 			</nav>
+
 			<div class="topbar-right" data-account></div>
 		</header>
 
 		<section class="dl">
 			<div class="dl-tabs">
-				<button class="dl-tab is-on" type="button" data-platform="quest">
+				<button
+					class="dl-tab is-on"
+					type="button"
+					data-platform="quest"
+				>
 					<span class="dl-icon">◓</span>
 					<span>Quest</span>
 				</button>
-				<button class="dl-tab" type="button" data-platform="steam">
+
+				<button
+					class="dl-tab"
+					type="button"
+					data-platform="steam"
+				>
 					<span class="dl-icon">◆</span>
 					<span>Steam</span>
 				</button>
@@ -42,50 +60,88 @@
 					<h1 data-dl-title>Recall for Quest</h1>
 					<p data-dl-text></p>
 					<p class="dl-req" data-dl-req></p>
-					<p class="dl-soon">Download links are coming soon.</p>
+					<p class="dl-soon">
+						Download links are coming soon.
+					</p>
 				</div>
-				<div class="dl-art"><img src="logo.png" alt="" /></div>
+
+				<div class="dl-art">
+					<img
+						data-dl-image
+						src="Quest.png"
+						alt="Recall for Quest"
+					/>
+				</div>
 			</div>
 		</section>
 
 		<footer>
-			<p>Recall &mdash; a fan-run revival of the 2026 client. Not affiliated with Rec Room Inc.</p>
-			<p><a href="index.html">Back to the front page</a></p>
+			<p>
+				Recall &mdash; a fan-run revival of the 2026 client.
+				Not affiliated with Rec Room Inc.
+			</p>
+			<p>
+				<a href="index.html">Back to the front page</a>
+			</p>
 		</footer>
 
 		<script src="site.js"></script>
+
 		<script>
 			const PLATFORMS = {
 				quest: {
 					title: 'Recall for Quest',
 					text: 'Recall is the 2026 client, back online on a community server. Build, hang out and play with everyone else on the server, standalone on your headset.',
 					req: 'Quest 2 or newer. Sideloaded — no store account needed.',
+					image: 'Quest.png',
+					alt: 'Recall for Quest',
 				},
+
 				steam: {
 					title: 'Recall for Steam',
 					text: 'Play Recall on PC in VR or on a flat screen. The launcher patches your copy of the 2026 client and points it at the Recall server.',
 					req: 'Windows 10 or later, plus the 2026 client on Steam.',
+					image: 'Steam.png',
+					alt: 'Recall for Steam',
 				},
-			}
-			const title = document.querySelector('[data-dl-title]')
-			const text = document.querySelector('[data-dl-text]')
-			const req = document.querySelector('[data-dl-req]')
+			};
+
+			const title = document.querySelector('[data-dl-title]');
+			const text = document.querySelector('[data-dl-text]');
+			const req = document.querySelector('[data-dl-req]');
+			const image = document.querySelector('[data-dl-image]');
+			const tabs = document.querySelectorAll('.dl-tab');
+
 			const show = (key) => {
-				const platform = PLATFORMS[key]
-				document.body.dataset.platform = key
-				title.textContent = platform.title
-				text.textContent = platform.text
-				req.textContent = platform.req
-			}
-			for (const tab of document.querySelectorAll('.dl-tab')) {
+				const platform = PLATFORMS[key];
+
+				if (!platform) return;
+
+				document.body.dataset.platform = key;
+
+				title.textContent = platform.title;
+				text.textContent = platform.text;
+				req.textContent = platform.req;
+
+				image.src = platform.image;
+				image.alt = platform.alt;
+
+				tabs.forEach((tab) => {
+					tab.classList.toggle(
+						'is-on',
+						tab.dataset.platform === key
+					);
+				});
+			};
+
+			tabs.forEach((tab) => {
 				tab.addEventListener('click', () => {
-					for (const other of document.querySelectorAll('.dl-tab')) {
-						other.classList.toggle('is-on', other === tab)
-					}
-					show(tab.dataset.platform)
-				})
-			}
-			show('quest')
+					show(tab.dataset.platform);
+				});
+			});
+
+			show('quest');
 		</script>
 	</body>
 </html>
+```

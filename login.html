@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Log in &middot; Recall</title>
+		<meta name="description" content="Log in to Recall with your Recall username and password." />
+		<link rel="icon" href="logo.png" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body class="centered">
+		<main class="card">
+			<a class="card-logo" href="index.html"><img src="logo.png" alt="Recall" /></a>
+
+			<p class="card-lede">Log in with your Recall username and password</p>
+
+			<p class="formerror" data-error hidden></p>
+
+			<form data-login>
+				<label>
+					<span>Username</span>
+					<input name="username" autocomplete="username" required />
+				</label>
+				<label>
+					<span>Password</span>
+					<input name="password" type="password" autocomplete="current-password" required />
+				</label>
+				<button class="pill solid wide" type="submit">Log in</button>
+			</form>
+
+			<p class="card-foot">
+				No account? Make one in game &mdash; <a href="download.html">download Recall</a>.
+			</p>
+			<p class="card-foot"><a href="index.html">Back to the front page</a></p>
+		</main>
+
+		<script src="site.js"></script>
+		<script>
+			const form = document.querySelector('[data-login]')
+			const error = document.querySelector('[data-error]')
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault()
+				const button = form.querySelector('button')
+				const data = new FormData(form)
+				error.hidden = true
+				button.disabled = true
+				button.textContent = 'Logging in…'
+				try {
+					session.write(await signIn(data.get('username').trim(), data.get('password')))
+					location.href = 'index.html'
+				} catch (err) {
+					error.textContent = err.message
+					error.hidden = false
+					button.disabled = false
+					button.textContent = 'Log in'
+				}
+			})
+		</script>
+	</body>
+</html>

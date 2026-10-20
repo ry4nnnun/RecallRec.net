@@ -19,22 +19,19 @@
 	</head>
 	<body>
 		<header class="topbar">
-			<a class="brand" href="#top"><img src="logo.png" alt="Recall" /></a>
+			<a class="brand" href="index.html"><img src="logo.png" alt="Recall" /></a>
 			<nav class="topnav">
 				<a href="#rooms">Rooms</a>
 				<a href="#feed">Photos</a>
-				<a href="#join">Join</a>
+				<a href="download.html">Download</a>
 			</nav>
-			<div class="topbar-right">
-				<a class="pill ghost" href="#join">Log in</a>
-				<a class="pill solid" href="#join">Download</a>
-			</div>
+			<div class="topbar-right" data-account></div>
 		</header>
 
 		<div class="notice" data-notice>
 			<p>
 				Recall is a community revival of the 2026 client, run by players. Not affiliated with
-				or endorsed by Rec Room Inc. Ask in the Recall chat for the launcher.
+				or endorsed by Rec Room Inc.
 			</p>
 			<button type="button" aria-label="Dismiss" data-notice-close>&times;</button>
 		</div>
@@ -44,10 +41,6 @@
 				<a class="promo" href="#rooms">
 					<div class="promo-art art-rooms"><span>Rooms</span></div>
 					<p>Browse what's open &rsaquo;</p>
-				</a>
-				<a class="promo" href="#join">
-					<div class="promo-art art-play"><span>Play Free</span></div>
-					<p>Get the Recall launcher &rsaquo;</p>
 				</a>
 				<a class="promo" href="#feed">
 					<div class="promo-art art-cam"><span>Camera Roll</span></div>
@@ -85,15 +78,6 @@
 				<h2>All rooms on the server</h2>
 				<div class="rooms-grid" data-rooms></div>
 			</section>
-
-			<section id="join" class="join">
-				<h2>Joining Recall</h2>
-				<ol>
-					<li>Get the Recall launcher and the patched 2026 client.</li>
-					<li>Start the game &mdash; it signs you in on the Recall server.</li>
-					<li>Meet everyone in the Rec Center, or pick a room from the list.</li>
-				</ol>
-			</section>
 		</main>
 
 		<footer>
@@ -106,6 +90,7 @@
 			<img alt="" />
 		</div>
 
+		<script src="site.js"></script>
 		<script src="app.js"></script>
 	</body>
 </html>

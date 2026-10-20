@@ -76,26 +76,99 @@ function postNode(photo, openPhoto) {
 	if (photo.caption) foot.append(el('p', 'caption', photo.caption))
 	foot.append(el('p', 'stamp', sinceText(photo.taken)))
 
-	post.append(top, shot, foot)
+	post.append(top, shot, foot, commentsNode(photo))
 	return post
+}
+
+/* ---------- comments ---------- */
+
+function commentsNode(photo) {
+	const box = el('section', 'comments')
+	box.append(el('h4', null, 'Comments'))
+	const list = el('div', 'comment-list')
+	box.append(list)
+
+	const draw = (comments) => {
+		list.replaceChildren()
+		if (!comments.length) {
+			list.append(el('p', 'comment-locked', 'No comments yet.'))
+			return
+		}
+		for (const comment of comments) {
+			const row = el('div', 'comment')
+			row.append(el('span', 'by', comment.author), el('span', 'text', comment.text))
+			list.append(row)
+		}
+	}
+	draw([])
+	loadComments(photo.id).then(draw).catch(() => {})
+
+	const who = session.read()
+	if (!who) {
+		const locked = el('p', 'comment-locked')
+		const link = el('a', null, 'Log in')
+		link.href = 'login.html'
+		locked.append(link, document.createTextNode(' to leave a comment.'))
+		box.append(locked)
+		return box
+	}
+
+	const form = el('form', 'comment-form')
+	const input = el('input')
+	input.placeholder = `Comment as ${who.username}…`
+	input.maxLength = 300
+	const send = el('button', 'pill solid', 'Post')
+	send.type = 'submit'
+	form.append(input, send)
+	const note = el('p', 'comment-note')
+	note.hidden = true
+	form.addEventListener('submit', async (e) => {
+		e.preventDefault()
+		const text = input.value.trim()
+		if (!text) return
+		send.disabled = true
+		try {
+			await postComment(photo.id, text, who)
+			input.value = ''
+			draw(await loadComments(photo.id))
+			note.hidden = true
+		} catch (err) {
+			note.textContent = err.message
+			note.hidden = false
+		}
+		send.disabled = false
+	})
+	box.append(form, note)
+	return box
 }
 
 /* ---------- rooms ---------- */
 
-function sideRoom(room) {
-	const wrap = el('div', 'side-room')
+function roomArt(room) {
 	const art = el('div', 'art')
 	art.style.setProperty('--art', artOf(room.name))
-	art.append(el('span', null, room.name))
+	if (room.photo) {
+		const img = el('img')
+		img.src = room.photo
+		img.alt = ''
+		img.loading = 'lazy'
+		art.append(img)
+	} else {
+		art.append(el('span', null, room.name))
+	}
+	return art
+}
+
+function sideRoom(room) {
+	const wrap = el('div', 'side-room')
+	const art = roomArt(room)
 	wrap.append(art, el('p', 'name', `^${room.name}`), el('p', 'by', room.kind))
 	return wrap
 }
 
 function roomCard(room) {
 	const card = el('article', 'room-card')
-	const art = el('div', 'art')
-	art.style.setProperty('--art', artOf(room.name))
-	art.append(el('span', null, room.name))
+	const art = roomArt(room)
 	const body = el('div', 'body')
 	body.append(el('h3', null, `^${room.name}`))
 	const meta = [`${room.visits.toLocaleString()} visit${room.visits === 1 ? '' : 's'}`]
@@ -189,3 +262,37 @@ async function load(first) {
 load(true)
 setInterval(swapOne, SWAP_MS)
 setInterval(() => load(false), REFETCH_MS)
+
+/* Comments live on the Recall server, so they need it reachable from the browser (see
+ * site.js). Until then reads come back empty and posting reports why. */
+
+const commentsUrl = (id) => `${serviceHost('api')}/api/images/v1/${id}/comments`
+
+async function loadComments(id) {
+	try {
+		const response = await fetch(commentsUrl(id), { cache: 'no-store' })
+		if (!response.ok) return []
+		const body = await response.json()
+		return Array.isArray(body) ? body : (body.comments ?? [])
+	} catch {
+		return []
+	}
+}
+
+async function postComment(id, text, who) {
+	let response
+	try {
+		response = await fetch(commentsUrl(id), {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json',
+				...(who.token ? { authorization: `Bearer ${who.token}` } : {}),
+			},
+			body: JSON.stringify({ text }),
+		})
+	} catch {
+		throw new Error('Could not reach the Recall server, so the comment was not saved.')
+	}
+	if (!response.ok) throw new Error('The server would not accept the comment.')
+	return response.json().catch(() => ({}))
+}

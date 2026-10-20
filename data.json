@@ -1,6 +1,7 @@
 {
  "rooms": [
   {
+   "photo": "",
    "id": 2,
    "name": "RecCenter",
    "kind": "Original",
@@ -15,6 +16,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 12,
    "name": "GoldenTrophy",
    "kind": "Original",
@@ -29,6 +31,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 10,
    "name": "Paintball",
    "kind": "Original",
@@ -43,6 +46,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 8,
    "name": "Dodgeball",
    "kind": "Original",
@@ -57,6 +61,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 258,
    "name": "MrCatClicker",
    "kind": "Community",
@@ -71,6 +76,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 15,
    "name": "CrimsonCauldron",
    "kind": "Original",
@@ -85,6 +91,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 16,
    "name": "IsleOfLostSkulls",
    "kind": "Original",
@@ -99,6 +106,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 38,
    "name": "Crescendo",
    "kind": "Original",
@@ -113,6 +121,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 41,
    "name": "StuntRunner",
    "kind": "Original",
@@ -127,6 +136,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 55,
    "name": "Graduation",
    "kind": "Community",
@@ -141,6 +151,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 39,
    "name": "Bowling",
    "kind": "Original",
@@ -155,6 +166,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 14,
    "name": "TheRiseofJumbotron",
    "kind": "Original",
@@ -169,6 +181,7 @@
    ]
   },
   {
+   "photo": "rooms/room-56.jpg",
    "id": 56,
    "name": "Ignited-Freddy",
    "kind": "Community",
@@ -183,6 +196,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 54,
    "name": "Survive-JiMbO",
    "kind": "Community",
@@ -197,6 +211,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 3,
    "name": "3DCharades",
    "kind": "Original",
@@ -211,6 +226,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 4,
    "name": "Legacy3DCharades",
    "kind": "Original",
@@ -224,6 +240,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 6,
    "name": "DiscGolfLake",
    "kind": "Original",
@@ -238,6 +255,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 7,
    "name": "DiscGolfPropulsion",
    "kind": "Original",
@@ -252,6 +270,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 9,
    "name": "Paddleball",
    "kind": "Original",
@@ -265,6 +284,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 11,
    "name": "PaintballVR",
    "kind": "Original",
@@ -278,6 +298,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 13,
    "name": "Orientation",
    "kind": "Original",
@@ -292,6 +313,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 17,
    "name": "Soccer",
    "kind": "Original",
@@ -306,6 +328,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 18,
    "name": "LaserTag",
    "kind": "Original",
@@ -320,6 +343,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 20,
    "name": "RecRoyaleSquads",
    "kind": "Original",
@@ -334,6 +358,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 21,
    "name": "RecRoyaleSolos",
    "kind": "Original",
@@ -348,6 +373,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 22,
    "name": "Lounge",
    "kind": "Original",
@@ -362,6 +388,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 25,
    "name": "Park",
    "kind": "Original",
@@ -376,6 +403,7 @@
    ]
   },
   {
+   "photo": "",
    "id": 37,
    "name": "DodgeballVR",
    "kind": "Original",
@@ -389,6 +417,7 @@
    ]
   },
   {
+   "photo": "rooms/room-191.jpg",
    "id": 191,
    "name": "Skateday2",
    "kind": "Community",
@@ -403,6 +432,7 @@
    ]
   },
   {
+   "photo": "rooms/room-192.jpg",
    "id": 192,
    "name": "TheMandalorian",
    "kind": "Community",
@@ -417,6 +447,7 @@
    ]
   },
   {
+   "photo": "rooms/room-237.jpg",
    "id": 237,
    "name": "Hobbits",
    "kind": "Community",
@@ -431,6 +462,7 @@
    ]
   },
   {
+   "photo": "rooms/room-238.jpg",
    "id": 238,
    "name": "HolidayModParty",
    "kind": "Community",
@@ -444,6 +476,7 @@
    ]
   },
   {
+   "photo": "rooms/room-249.jpg",
    "id": 249,
    "name": "The-Forbidden-One",
    "kind": "Community",
@@ -458,6 +491,7 @@
    ]
   },
   {
+   "photo": "rooms/room-250.jpg",
    "id": 250,
    "name": "TheSummit",
    "kind": "Community",
@@ -471,6 +505,7 @@
    ]
   },
   {
+   "photo": "rooms/room-255.jpg",
    "id": 255,
    "name": "spacestationpvp",
    "kind": "Community",
@@ -487,6 +522,7 @@
  ],
  "photos": [
   {
+   "id": 117,
    "src": "photos/photo-0117.jpg",
    "author": "Jagslicer",
    "room": "@JollyWolf2487's Dorm",
@@ -496,6 +532,7 @@
    "taken": "2026-10-19"
   },
   {
+   "id": 115,
    "src": "photos/photo-0115.jpg",
    "author": "Jagslicer",
    "room": "@JollyWolf2487's Dorm",
@@ -505,6 +542,7 @@
    "taken": "2026-10-19"
   },
   {
+   "id": 109,
    "src": "photos/photo-0109.jpg",
    "author": "Jagslicer",
    "room": "RecCenter",
@@ -514,6 +552,7 @@
    "taken": "2026-10-19"
   },
   {
+   "id": 107,
    "src": "photos/photo-0107.jpg",
    "author": "LuckyKoala3402",
    "room": "RecCenter",
@@ -523,6 +562,7 @@
    "taken": "2026-10-19"
   },
   {
+   "id": 106,
    "src": "photos/photo-0106.jpg",
    "author": "mammonvr2",
    "room": "RecCenter",
@@ -532,6 +572,7 @@
    "taken": "2026-10-19"
   },
   {
+   "id": 96,
    "src": "photos/photo-0096.jpg",
    "author": "John2",
    "room": "RecCenter",
@@ -541,6 +582,7 @@
    "taken": "2026-10-19"
   },
   {
+   "id": 94,
    "src": "photos/photo-0094.jpg",
    "author": "gatoo",
    "room": "RecCenter",
@@ -550,6 +592,7 @@
    "taken": "2026-10-19"
   },
   {
+   "id": 92,
    "src": "photos/photo-0092.jpg",
    "author": "compact",
    "room": "RecCenter",
@@ -559,6 +602,7 @@
    "taken": "2026-10-19"
   },
   {
+   "id": 51,
    "src": "photos/photo-0051.jpg",
    "author": "Jix",
    "room": "@JollyPixel2012's Dorm",
@@ -568,6 +612,7 @@
    "taken": "2026-10-18"
   },
   {
+   "id": 46,
    "src": "photos/photo-0046.jpg",
    "author": "FuzzyFox8007",
    "room": "GoldenTrophy",
@@ -577,6 +622,7 @@
    "taken": "2026-10-18"
   },
   {
+   "id": 41,
    "src": "photos/photo-0041.jpg",
    "author": "mrcat",
    "room": "@CleverOtter2553's Dorm",
@@ -586,6 +632,7 @@
    "taken": "2026-10-18"
   },
   {
+   "id": 28,
    "src": "photos/photo-0028.jpg",
    "author": "mrcat",
    "room": "DormRoom",
@@ -595,6 +642,7 @@
    "taken": "2026-10-17"
   },
   {
+   "id": 27,
    "src": "photos/photo-0027.jpg",
    "author": "gatoo",
    "room": "@HappyHeron9656's Dorm",

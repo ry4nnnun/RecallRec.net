@@ -20,23 +20,8 @@ const shuffled = (list) => {
 	return copy
 }
 
-// Stable colour per name, so a room or player keeps its look between shuffles.
-const hueOf = (text) => {
-	let hash = 0
-	for (const ch of text) hash = (hash * 31 + ch.charCodeAt(0)) % 360
-	return hash
-}
-const artOf = (text) => {
-	const h = hueOf(text)
-	return `linear-gradient(145deg, hsl(${h} 58% 42%), hsl(${(h + 40) % 360} 55% 26%))`
-}
-
-const el = (tag, className, text) => {
-	const node = document.createElement(tag)
-	if (className) node.className = className
-	if (text !== undefined) node.textContent = text
-	return node
-}
+// `el`, `artOf` and the avatar tile are shared with the search overlay and the profile
+// page — they live in site.js, which every page loads first.
 
 const sinceText = (iso) => {
 	const days = Math.floor((Date.now() - Date.parse(iso + 'T12:00:00Z')) / 86400000)
@@ -52,15 +37,23 @@ const sinceText = (iso) => {
 function postNode(photo, openPhoto) {
 	const post = el('article', 'post')
 
+	// The author's own profile picture, and both it and their name open their profile —
+	// the account id rides along in data.json for exactly this.
 	const top = el('div', 'post-top')
-	const avatar = el('div', 'avatar', (photo.author[0] || '?').toUpperCase())
-	avatar.style.setProperty('--art', artOf(photo.author))
+	const avatar = avatarNode(photo.author, photo.authorImage)
 	const who = el('div', 'who')
 	const name = el('div', 'name', photo.author)
 	name.append(el('span', 'handle', `@${photo.author}`))
 	who.append(name)
 	if (photo.roomRef) who.append(el('div', 'where', photo.roomRef))
-	top.append(avatar, who)
+	if (photo.authorId) {
+		const link = el('a', 'post-author')
+		link.href = profileHref(photo.authorId)
+		link.append(avatar, who)
+		top.append(link)
+	} else {
+		top.append(avatar, who)
+	}
 
 	const shot = el('button', 'post-shot')
 	shot.type = 'button'
@@ -168,6 +161,7 @@ function sideRoom(room) {
 
 function roomCard(room) {
 	const card = el('article', 'room-card')
+	card.id = `room-${room.id}` // a search result links straight to this card
 	const art = roomArt(room)
 	const body = el('div', 'body')
 	body.append(el('h3', null, `^${room.name}`))
@@ -208,13 +202,27 @@ document.querySelector('[data-notice-close]').addEventListener('click', () => {
 	document.querySelector('[data-notice]').hidden = true
 })
 
+const showTab = (which) => {
+	for (const tab of document.querySelectorAll('.tab')) {
+		tab.classList.toggle('is-on', tab.dataset.tab === which)
+	}
+	roomsPanel.hidden = which !== 'rooms'
+	columns.hidden = which === 'rooms'
+}
+
 for (const tab of document.querySelectorAll('.tab')) {
-	tab.addEventListener('click', () => {
-		for (const other of document.querySelectorAll('.tab')) other.classList.toggle('is-on', other === tab)
-		const roomsView = tab.dataset.tab === 'rooms'
-		roomsPanel.hidden = !roomsView
-		columns.hidden = roomsView
-	})
+	tab.addEventListener('click', () => showTab(tab.dataset.tab))
+}
+
+/** `index.html?room=<id>` — a room picked out of search. Open the grid on its card. */
+function revealRoom() {
+	const wanted = new URLSearchParams(location.search).get('room')
+	if (!wanted) return
+	const card = document.getElementById(`room-${wanted}`)
+	if (!card) return
+	showTab('rooms')
+	card.classList.add('is-picked')
+	card.scrollIntoView({ behavior: 'smooth', block: 'center' })
 }
 
 function drawFeed() {
@@ -251,6 +259,7 @@ async function load(first) {
 		if (first) {
 			drawFeed()
 			drawRooms()
+			revealRoom()
 		} else if (isNew) {
 			drawFeed() // new photos arrived on the server
 		}

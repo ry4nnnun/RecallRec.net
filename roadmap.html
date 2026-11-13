@@ -13,6 +13,66 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="styles.css" />
+		<style>
+			.rm { max-width: 1100px; margin: 0 auto; padding: 0 16px 64px; }
+
+			/* hero banner, striped like the front page tiles */
+			.rm-hero {
+				margin: 24px 0 36px; border-radius: 10px; padding: 44px 28px; text-align: center;
+				background: repeating-linear-gradient(135deg, #43ad33 0 28px, #4fbb3e 28px 56px);
+				box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), 0 10px 30px rgba(0,0,0,.35);
+			}
+			.rm-hero h1 { margin: 0; font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 900; letter-spacing: .04em; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.25); }
+			.rm-hero p { margin: 8px 0 0; color: #eaffe4; font-weight: 700; }
+
+			/* progress track */
+			.rm-track { position: relative; margin: 0 0 44px; padding: 0 8px; }
+			.rm-bar { position: absolute; left: 8%; right: 8%; top: 22px; height: 8px; border-radius: 99px; background: var(--line); }
+			.rm-bar i { position: absolute; inset: 0 auto 0 0; width: 31%; border-radius: inherit; background: linear-gradient(90deg, var(--green-dark), var(--green)); box-shadow: 0 0 14px rgba(92,194,74,.6); }
+			.rm-stops { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); list-style: none; margin: 0; padding: 0; text-align: center; }
+			.rm-stop b { display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 8px; border-radius: 50%; background: var(--panel); border: 4px solid var(--line); font-size: 1.3rem; }
+			.rm-stop span { display: block; font-size: .75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+			.rm-stop.done b { background: var(--green); border-color: var(--green); }
+			.rm-stop.now b { border-color: var(--green); box-shadow: 0 0 0 6px rgba(92,194,74,.25); animation: pulse 1.8s ease-in-out infinite; }
+			.rm-stop.done span, .rm-stop.now span { color: var(--green); }
+			@keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(92,194,74,.08); } }
+
+			/* phase cards */
+			.rm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+			.rm-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s; }
+			.rm-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.35); }
+			.rm-card.now { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); }
+			.rm-art { position: relative; height: 120px; display: grid; place-items: center; font-size: 2.6rem; }
+			.rm-art::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,.07) 0 22px, transparent 22px 44px); }
+			.rm-art .rm-pill { position: absolute; top: 10px; right: 10px; z-index: 1; font-size: .68rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; padding: 4px 10px; border-radius: 99px; background: rgba(0,0,0,.45); color: #fff; }
+			.rm-card.done .rm-pill { background: #fff; color: #2c7a20; }
+			.rm-card.now .rm-pill { background: var(--green); color: #102b0b; }
+			.rm-body { padding: 16px 18px 18px; flex: 1; }
+			.rm-when { font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+			.rm-body h2 { margin: 4px 0 10px; font-size: 1.25rem; font-weight: 900; }
+			.rm-body ul { margin: 0; padding: 0; list-style: none; }
+			.rm-body li { position: relative; padding-left: 22px; margin: 6px 0; color: #cfcfcf; font-size: .92rem; }
+			.rm-body li::before { content: ""; position: absolute; left: 0; top: .35em; width: 12px; height: 12px; border-radius: 3px; border: 2px solid var(--line); }
+			.rm-card.done li::before { background: var(--green); border-color: var(--green); }
+			.rm-card.now li.ok::before { background: var(--green); border-color: var(--green); }
+
+			.g-start  { background: linear-gradient(135deg, #2f8f22, #57c444); }
+			.g-now    { background: linear-gradient(135deg, #7ab51d, #b4d82c); }
+			.g-launch { background: linear-gradient(135deg, #1f7a57, #2fbf8a); }
+			.g-orig   { background: linear-gradient(135deg, #5b2aa8, #8d3fc9); }
+			.g-studio { background: linear-gradient(135deg, #2a3fa8, #4072d6); }
+			.g-avatar { background: linear-gradient(135deg, #a8701e, #d6a83a); }
+
+			.rm-note { margin: 28px 0 0; text-align: center; color: var(--muted); font-size: .85rem; }
+
+			@media (max-width: 640px) {
+				.rm-hero { padding: 32px 16px; }
+				.rm-stop b { width: 38px; height: 38px; font-size: 1rem; border-width: 3px; }
+				.rm-bar { top: 16px; }
+				.rm-stop span { font-size: .6rem; }
+				.rm-grid { grid-template-columns: 1fr; }
+			}
+		</style>
 	</head>
 	<body>
 		<header class="topbar">
@@ -26,43 +86,104 @@
 			<div class="topbar-right" data-account></div>
 		</header>
 
-		<section class="rm">
-			<h1>Roadmap</h1>
-			<p class="rm-sub">Where Recall has been, and what's coming next. Dates are plans, not promises.</p>
+		<main class="rm">
+			<section class="rm-hero">
+				<h1>ROADMAP</h1>
+				<p>Where Recall has been &mdash; and where it's headed.</p>
+			</section>
 
-			<ol class="rm-list">
-				<li class="rm-item is-done">
-					<span class="rm-when">Early October 2026</span>
-					<h2>The start</h2>
-					<p>Recall kicks off: getting the 2026 client booting against our own server.</p>
-				</li>
-				<li class="rm-item is-now">
-					<span class="rm-when">Late November 2026</span>
-					<h2>Server &amp; UI upgrades <span class="rm-tag">Now</span></h2>
-					<p>Faster, more stable servers and the new lime Recall look across menus and loading screens.</p>
-				</li>
-				<li class="rm-item">
-					<span class="rm-when">Early &ndash; Late December 2026</span>
-					<h2>Planned release</h2>
-					<p>Recall opens up to players on Quest and PC.</p>
-				</li>
-				<li class="rm-item">
-					<span class="rm-when">2027</span>
-					<h2>Recall Original games</h2>
-					<p>Brand-new games made by the Recall team.</p>
-				</li>
-				<li class="rm-item">
-					<span class="rm-when">Later</span>
-					<h2>Rec Room Studio</h2>
-					<p>Support for building rooms with Studio.</p>
-				</li>
-				<li class="rm-item">
-					<span class="rm-when">Later</span>
-					<h2>Avatar Studio &amp; more</h2>
-					<p>Custom avatar items, and whatever the community asks for next.</p>
-				</li>
-			</ol>
-		</section>
+			<div class="rm-track" aria-hidden="true">
+				<div class="rm-bar"><i></i></div>
+				<ol class="rm-stops">
+					<li class="rm-stop done"><b>✓</b><span>Oct</span></li>
+					<li class="rm-stop now"><b>⚙️</b><span>Nov &middot; Now</span></li>
+					<li class="rm-stop"><b>🚀</b><span>Dec</span></li>
+					<li class="rm-stop"><b>🎮</b><span>2027</span></li>
+					<li class="rm-stop"><b>🛠️</b><span>Later</span></li>
+					<li class="rm-stop"><b>🧍</b><span>Later</span></li>
+				</ol>
+			</div>
+
+			<div class="rm-grid">
+				<article class="rm-card done">
+					<div class="rm-art g-start"><span class="rm-pill">Done</span>🌱</div>
+					<div class="rm-body">
+						<span class="rm-when">Early October 2026</span>
+						<h2>The Start</h2>
+						<ul>
+							<li>Recall project kicks off</li>
+							<li>2026 client booting on our own server</li>
+							<li>First rooms loading</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="rm-card now">
+					<div class="rm-art g-now"><span class="rm-pill">In progress</span>⚙️</div>
+					<div class="rm-body">
+						<span class="rm-when">Late November 2026</span>
+						<h2>Server &amp; UI Upgrades</h2>
+						<ul>
+							<li class="ok">New lime Recall look</li>
+							<li class="ok">Website, photos &amp; profiles</li>
+							<li>Faster, more stable servers</li>
+							<li>Menu &amp; loading screen polish</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="rm-card">
+					<div class="rm-art g-launch"><span class="rm-pill">Planned</span>🚀</div>
+					<div class="rm-body">
+						<span class="rm-when">Early &ndash; Late December 2026</span>
+						<h2>Release</h2>
+						<ul>
+							<li>Recall opens to players</li>
+							<li>Quest &amp; PC (Steam) downloads</li>
+							<li>Launch events</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="rm-card">
+					<div class="rm-art g-orig"><span class="rm-pill">Future</span>🎮</div>
+					<div class="rm-body">
+						<span class="rm-when">2027</span>
+						<h2>Recall Originals</h2>
+						<ul>
+							<li>Brand-new games by the Recall team</li>
+							<li>Fresh rooms to explore</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="rm-card">
+					<div class="rm-art g-studio"><span class="rm-pill">Future</span>🛠️</div>
+					<div class="rm-body">
+						<span class="rm-when">Later</span>
+						<h2>Rec Room Studio</h2>
+						<ul>
+							<li>Build and publish rooms with Studio</li>
+							<li>Creator tools</li>
+						</ul>
+					</div>
+				</article>
+
+				<article class="rm-card">
+					<div class="rm-art g-avatar"><span class="rm-pill">Future</span>🧍</div>
+					<div class="rm-body">
+						<span class="rm-when">Later</span>
+						<h2>Avatar Studio &amp; More</h2>
+						<ul>
+							<li>Custom avatar items</li>
+							<li>Whatever the community asks for next</li>
+						</ul>
+					</div>
+				</article>
+			</div>
+
+			<p class="rm-note">Dates are plans, not promises.</p>
+		</main>
 
 		<footer>
 			<p>Recall &mdash; a fan-run revival of the 2026 client. Not affiliated with Rec Room Inc.</p>

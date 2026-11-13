@@ -16,92 +16,66 @@
 		<style>
 			.rm { max-width: 1100px; margin: 0 auto; padding: 0 16px 64px; }
 
-			/* hero banner, striped like the front page tiles */
 			.rm-hero {
-				margin: 24px 0 36px; border-radius: 10px; padding: 44px 28px; text-align: center;
+				margin: 24px 0 24px; border-radius: 10px; padding: 44px 28px; text-align: center;
 				background: repeating-linear-gradient(135deg, #43ad33 0 28px, #4fbb3e 28px 56px);
 				box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), 0 10px 30px rgba(0,0,0,.35);
 			}
 			.rm-hero h1 { margin: 0; font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 900; letter-spacing: .04em; color: #fff; text-shadow: 0 3px 0 rgba(0,0,0,.25); }
 			.rm-hero p { margin: 8px 0 0; color: #eaffe4; font-weight: 700; }
 
-			/* progress track */
-			.rm-track { position: relative; margin: 0 0 44px; padding: 0 8px; }
-			.rm-bar { position: absolute; left: 8%; right: 8%; top: 22px; height: 8px; border-radius: 99px; background: var(--line); }
-			.rm-bar i { position: absolute; inset: 0 auto 0 0; width: 31%; border-radius: inherit; background: linear-gradient(90deg, var(--green-dark), var(--green)); box-shadow: 0 0 14px rgba(92,194,74,.6); }
-			.rm-stops { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); list-style: none; margin: 0; padding: 0; text-align: center; }
-			.rm-stop b { display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 8px; border-radius: 50%; background: var(--panel); border: 4px solid var(--line); font-size: 1.3rem; }
-			.rm-stop span { display: block; font-size: .75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-			.rm-stop.done b { background: var(--green); border-color: var(--green); }
-			.rm-stop.now b { border-color: var(--green); box-shadow: 0 0 0 6px rgba(92,194,74,.25); animation: pulse 1.8s ease-in-out infinite; }
-			.rm-stop.done span, .rm-stop.now span { color: var(--green); }
-			@keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(92,194,74,.08); } }
-
-
-			/* stats strip */
-			.rm-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 28px; }
+			.rm-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 24px; }
 			.rm-stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; text-align: center; }
 			.rm-stat b { display: block; font-size: 1.5rem; font-weight: 900; color: var(--green); }
 			.rm-stat span { font-size: .75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 
-			/* winding path */
-			.rm-path { position: relative; background: rgba(255,255,255,.03); border: 1px solid var(--line); border-radius: 12px; margin: 0 0 8px; }
+			/* the board */
+			.rm-path {
+				position: relative; border-radius: 14px; margin: 0 0 8px; border: 1px solid var(--line);
+				background:
+					radial-gradient(circle at 1px 1px, rgba(255,255,255,.06) 1px, transparent 0) 0 0 / 22px 22px,
+					linear-gradient(180deg, #2b2b2b, #222);
+			}
 			.rm-path svg { display: block; width: 100%; height: auto; overflow: visible; }
-			.rm-road { fill: none; stroke: #e6e6e6; stroke-width: 14; stroke-linecap: round; stroke-linejoin: round; }
-			.rm-road-green { stroke: var(--green); transition: stroke-dashoffset 1.6s ease-out; }
-			.rm-trail { fill: none; stroke: #e6e6e6; stroke-width: 14; stroke-linecap: round; stroke-dasharray: 2 34; }
+
+			/* road: dark casing, light surface, dashed centre lane */
+			.rm-case { fill: none; stroke: #121212; stroke-width: 34; stroke-linecap: round; stroke-linejoin: round; }
+			.rm-road { fill: none; stroke: #d9d9d9; stroke-width: 24; stroke-linecap: round; stroke-linejoin: round; }
+			.rm-green { fill: none; stroke: url(#rm-g); stroke-width: 24; stroke-linecap: round; stroke-linejoin: round; transition: stroke-dashoffset 1.8s cubic-bezier(.3,.7,.2,1); }
+			.rm-lane { fill: none; stroke: rgba(0,0,0,.18); stroke-width: 3; stroke-dasharray: 14 16; stroke-linecap: round; }
+			.rm-shine { fill: none; stroke: rgba(255,255,255,.35); stroke-width: 4; stroke-linecap: round; transform: translateY(-6px); }
+			.rm-trail { fill: none; stroke: #d9d9d9; stroke-width: 16; stroke-linecap: round; stroke-dasharray: 1 36; }
+
+			/* stops */
 			.rm-node { cursor: pointer; outline: none; }
-			.rm-node .ring { fill: #f2f2f2; transition: r .15s; }
-			.rm-node .dot { fill: #a9a9a9; transition: r .15s; }
-			.rm-node.done .dot, .rm-node.now .dot { fill: var(--green); }
-			.rm-node.now .ring { fill: #fff; filter: drop-shadow(0 0 10px rgba(92,194,74,.9)); }
-			.rm-node:hover .ring, .rm-node:focus .ring, .rm-node.open .ring { r: 32; }
-			.rm-node:hover .dot, .rm-node:focus .dot, .rm-node.open .dot { r: 23; }
-			.rm-node .ico { font-size: 22px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+			.rm-node .base { fill: #121212; }
+			.rm-node .ring { fill: #f4f4f4; }
+			.rm-node .core { fill: #8f8f8f; }
+			.rm-node .gloss { fill: rgba(255,255,255,.35); }
+			.rm-node .mark { fill: none; stroke: #fff; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+			.rm-node .num { fill: #fff; font: 900 20px Nunito, sans-serif; text-anchor: middle; dominant-baseline: central; }
+			.rm-node.done .core, .rm-node.now .core { fill: url(#rm-g); }
+			.rm-node .halo { fill: none; stroke: var(--green); stroke-width: 3; opacity: 0; }
+			.rm-node.now .halo { animation: halo 2s ease-out infinite; }
+			@keyframes halo { 0% { r: 30; opacity: .9; } 100% { r: 54; opacity: 0; } }
+			.rm-node .bob { transition: transform .2s; transform-box: fill-box; transform-origin: center; }
+			.rm-node:hover .bob, .rm-node:focus .bob, .rm-node.open .bob { transform: scale(1.15); }
+
 			.rm-node .date { fill: var(--text); font: 900 22px Nunito, sans-serif; text-anchor: middle; }
-			.rm-node .sub { fill: var(--muted); font: 800 15px Nunito, sans-serif; text-anchor: middle; text-transform: uppercase; letter-spacing: .05em; }
+			.rm-node .sub { fill: var(--muted); font: 800 14px Nunito, sans-serif; text-anchor: middle; letter-spacing: .08em; }
 			.rm-node.done .sub, .rm-node.now .sub { fill: var(--green); }
-			.rm-bubble { position: absolute; z-index: 5; width: 250px; transform: translate(-50%, calc(-100% - 22px)); background: #fff; color: #1d1d1d; border-radius: 12px; padding: 12px 14px; box-shadow: 0 10px 30px rgba(0,0,0,.45); pointer-events: none; }
-			.rm-bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; margin-left: -9px; border: 9px solid transparent; border-bottom: 0; border-top-color: #fff; }
+			.rm-node .tag { fill: #1d1d1d; stroke: var(--line); stroke-width: 1.5; }
+			.rm-node.done .tag, .rm-node.now .tag { stroke: var(--green); }
+
+			.rm-bubble { position: absolute; z-index: 5; width: 250px; transform: translate(-50%, calc(-100% - 30px)); background: #fff; color: #1d1d1d; border-radius: 12px; padding: 12px 14px; box-shadow: 0 10px 30px rgba(0,0,0,.45); pointer-events: none; border-top: 5px solid var(--green); }
+			.rm-bubble::after { content: ""; position: absolute; left: var(--tip, 50%); bottom: -9px; margin-left: -9px; border: 9px solid transparent; border-bottom: 0; border-top-color: #fff; }
 			.rm-bubble h3 { margin: 0 0 4px; font-size: 1rem; font-weight: 900; }
-			.rm-bubble small { display: inline-block; margin-bottom: 6px; font-weight: 900; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: #2c7a20; }
+			.rm-bubble small { display: inline-block; margin-bottom: 4px; font-weight: 900; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: #2c7a20; }
 			.rm-bubble p { margin: 0; font-size: .88rem; line-height: 1.4; color: #444; }
-			.rm-hint { text-align: center; color: var(--muted); font-size: .8rem; margin: 0 0 40px; }
-
-			/* phase cards */
-			.rm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
-			.rm-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s; }
-			.rm-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.35); }
-			.rm-card.now { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); }
-			.rm-art { position: relative; height: 120px; display: grid; place-items: center; font-size: 2.6rem; }
-			.rm-art::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,.07) 0 22px, transparent 22px 44px); }
-			.rm-art .rm-pill { position: absolute; top: 10px; right: 10px; z-index: 1; font-size: .68rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; padding: 4px 10px; border-radius: 99px; background: rgba(0,0,0,.45); color: #fff; }
-			.rm-card.done .rm-pill { background: #fff; color: #2c7a20; }
-			.rm-card.now .rm-pill { background: var(--green); color: #102b0b; }
-			.rm-body { padding: 16px 18px 18px; flex: 1; }
-			.rm-when { font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-			.rm-body h2 { margin: 4px 0 10px; font-size: 1.25rem; font-weight: 900; }
-			.rm-body ul { margin: 0; padding: 0; list-style: none; }
-			.rm-body li { position: relative; padding-left: 22px; margin: 6px 0; color: #cfcfcf; font-size: .92rem; }
-			.rm-body li::before { content: ""; position: absolute; left: 0; top: .35em; width: 12px; height: 12px; border-radius: 3px; border: 2px solid var(--line); }
-			.rm-card.done li::before { background: var(--green); border-color: var(--green); }
-			.rm-card.now li.ok::before { background: var(--green); border-color: var(--green); }
-
-			.g-start  { background: linear-gradient(135deg, #2f8f22, #57c444); }
-			.g-now    { background: linear-gradient(135deg, #7ab51d, #b4d82c); }
-			.g-launch { background: linear-gradient(135deg, #1f7a57, #2fbf8a); }
-			.g-orig   { background: linear-gradient(135deg, #5b2aa8, #8d3fc9); }
-			.g-studio { background: linear-gradient(135deg, #2a3fa8, #4072d6); }
-			.g-avatar { background: linear-gradient(135deg, #a8701e, #d6a83a); }
-
-			.rm-note { margin: 28px 0 0; text-align: center; color: var(--muted); font-size: .85rem; }
+			.rm-hint { text-align: center; color: var(--muted); font-size: .8rem; margin: 0; }
 
 			@media (max-width: 640px) {
 				.rm-hero { padding: 32px 16px; }
-				.rm-stop b { width: 38px; height: 38px; font-size: 1rem; border-width: 3px; }
-				.rm-bar { top: 16px; }
-				.rm-stop span { font-size: .6rem; }
-				.rm-grid { grid-template-columns: 1fr; }
 				.rm-stats { grid-template-columns: 1fr 1fr; }
 				.rm-bubble { width: 190px; }
 			}
@@ -133,95 +107,24 @@
 			</div>
 
 			<div class="rm-path" data-path>
-				<svg viewBox="0 0 1000 640" role="img" aria-label="Recall roadmap path">
-					<path class="rm-road" id="rm-road" d="M40,125 Q70,110 180,110 L700,110 Q880,110 880,220 Q880,330 760,335 L460,345 Q180,345 170,450 Q165,550 320,555 L760,560" />
-					<path class="rm-road rm-road-green" d="M40,125 Q70,110 180,110 L700,110 Q880,110 880,220 Q880,330 760,335 L460,345 Q180,345 170,450 Q165,550 320,555 L760,560" />
-					<path class="rm-trail" d="M800,560 Q900,556 930,610" />
+				<svg viewBox="0 0 1000 660" role="img" aria-label="Recall roadmap path">
+					<defs>
+						<linearGradient id="rm-g" x1="0" y1="0" x2="1" y2="1">
+							<stop offset="0" stop-color="#7ddc5f" />
+							<stop offset="1" stop-color="#3f9a31" />
+						</linearGradient>
+					</defs>
+					<path class="rm-trail" d="M800,575 Q900,571 930,630" />
+					<path class="rm-case" data-road />
+					<path class="rm-road" data-road id="rm-road" />
+					<path class="rm-green" data-road />
+					<path class="rm-shine" data-road />
+					<path class="rm-lane" data-road />
 					<g data-nodes></g>
 				</svg>
 				<div class="rm-bubble" data-bubble hidden></div>
 			</div>
 			<p class="rm-hint">Hover or tap a stop to see the goal.</p>
-
-			<div class="rm-grid">
-				<article class="rm-card done">
-					<div class="rm-art g-start"><span class="rm-pill">Done</span>🌱</div>
-					<div class="rm-body">
-						<span class="rm-when">Early October 2026</span>
-						<h2>The Start</h2>
-						<ul>
-							<li>Recall project kicks off</li>
-							<li>2026 client booting on our own server</li>
-							<li>First rooms loading</li>
-						</ul>
-					</div>
-				</article>
-
-				<article class="rm-card now">
-					<div class="rm-art g-now"><span class="rm-pill">In progress</span>⚙️</div>
-					<div class="rm-body">
-						<span class="rm-when">Late November 2026</span>
-						<h2>Server &amp; UI Upgrades</h2>
-						<ul>
-							<li class="ok">New lime Recall look</li>
-							<li class="ok">Website, photos &amp; profiles</li>
-							<li>Faster, more stable servers</li>
-							<li>Menu &amp; loading screen polish</li>
-						</ul>
-					</div>
-				</article>
-
-				<article class="rm-card">
-					<div class="rm-art g-launch"><span class="rm-pill">Planned</span>🚀</div>
-					<div class="rm-body">
-						<span class="rm-when">Early &ndash; Late December 2026</span>
-						<h2>Release</h2>
-						<ul>
-							<li>Recall opens to players</li>
-							<li>Quest &amp; PC (Steam) downloads</li>
-							<li>Launch events</li>
-						</ul>
-					</div>
-				</article>
-
-				<article class="rm-card">
-					<div class="rm-art g-orig"><span class="rm-pill">Future</span>🎮</div>
-					<div class="rm-body">
-						<span class="rm-when">2027</span>
-						<h2>Recall Originals</h2>
-						<ul>
-							<li>Brand-new games by the Recall team</li>
-							<li>Fresh rooms to explore</li>
-						</ul>
-					</div>
-				</article>
-
-				<article class="rm-card">
-					<div class="rm-art g-studio"><span class="rm-pill">Future</span>🛠️</div>
-					<div class="rm-body">
-						<span class="rm-when">Later</span>
-						<h2>Rec Room Studio</h2>
-						<ul>
-							<li>Build and publish rooms with Studio</li>
-							<li>Creator tools</li>
-						</ul>
-					</div>
-				</article>
-
-				<article class="rm-card">
-					<div class="rm-art g-avatar"><span class="rm-pill">Future</span>🧍</div>
-					<div class="rm-body">
-						<span class="rm-when">Later</span>
-						<h2>Avatar Studio &amp; More</h2>
-						<ul>
-							<li>Custom avatar items</li>
-							<li>Whatever the community asks for next</li>
-						</ul>
-					</div>
-				</article>
-			</div>
-
-			<p class="rm-note">Dates are plans, not promises.</p>
 		</main>
 
 		<footer>
@@ -231,50 +134,72 @@
 
 		<script>
 			const STOPS = [
-				{ at: 0.10, s: "done", ico: "🌱", date: "Early Oct", sub: "Done", title: "The Start", text: "Recall kicks off: the 2026 client boots on our own server and the first rooms load." },
-				{ at: 0.27, s: "now", ico: "⚙️", date: "Late Nov", sub: "Now", title: "Server & UI Upgrades", text: "Faster, more stable servers and the new lime Recall look across menus, loading screens and this website." },
-				{ at: 0.465, s: "", ico: "🚀", date: "Dec", sub: "Release", title: "Planned Release", text: "Early to late December: Recall opens to players on Quest and PC." },
-				{ at: 0.62, s: "", ico: "🎮", date: "2027", sub: "Originals", title: "Recall Original Games", text: "Brand-new games and rooms made by the Recall team." },
-				{ at: 0.79, s: "", ico: "🛠️", date: "Later", sub: "Studio", title: "Rec Room Studio", text: "Build and publish your own rooms with Studio and creator tools." },
-				{ at: 0.95, s: "", ico: "🧍", date: "Later", sub: "Avatars", title: "Avatar Studio & More", text: "Custom avatar items, and whatever the community asks for next." },
+				{ at: 0.10, s: "done", date: "Early Oct", sub: "DONE", title: "The Start", text: "Recall kicks off: the 2026 client boots on our own server and the first rooms load." },
+				{ at: 0.27, s: "now", date: "Late Nov", sub: "NOW", title: "Server & UI Upgrades", text: "Faster, more stable servers and the new lime Recall look across menus, loading screens and this website." },
+				{ at: 0.465, s: "", date: "Dec", sub: "RELEASE", title: "Planned Release", text: "Early to late December: Recall opens to players on Quest and PC." },
+				{ at: 0.62, s: "", date: "2027", sub: "ORIGINALS", title: "Recall Original Games", text: "Brand-new games and rooms made by the Recall team." },
+				{ at: 0.79, s: "", date: "Later", sub: "STUDIO", title: "Rec Room Studio", text: "Build and publish your own rooms with Studio and creator tools." },
+				{ at: 0.95, s: "", date: "Later", sub: "AVATARS", title: "Avatar Studio & More", text: "Custom avatar items, and whatever the community asks for next." },
 			];
+			const D = "M40,135 Q70,120 180,120 L700,120 Q880,120 880,235 Q880,345 760,350 L460,360 Q180,360 170,465 Q165,565 320,570 L760,575";
 			const NS = "http://www.w3.org/2000/svg";
 			const box = document.querySelector("[data-path]");
+			box.querySelectorAll("[data-road]").forEach((p) => p.setAttribute("d", D));
 			const road = document.getElementById("rm-road");
-			const green = box.querySelector(".rm-road-green");
+			const green = box.querySelector(".rm-green");
 			const nodes = box.querySelector("[data-nodes]");
 			const bubble = box.querySelector("[data-bubble]");
 			const len = road.getTotalLength();
 			const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
 
-			// Green progress runs a little past the "now" stop, drawn in on load.
+			// Green progress ends a little past the "now" stop and draws in on load.
 			const now = STOPS.find((x) => x.s === "now");
-			green.style.strokeDasharray = len;
+			green.style.strokeDasharray = len + " " + len;
 			green.style.strokeDashoffset = len;
-			requestAnimationFrame(() => requestAnimationFrame(() => (green.style.strokeDashoffset = len * (1 - (now.at + 0.07)))));
+			requestAnimationFrame(() => requestAnimationFrame(() => (green.style.strokeDashoffset = len * (1 - (now.at + 0.06)))));
 
 			let open = null;
 			function show(g, st) {
 				if (open) open.classList.remove("open");
 				open = g; g.classList.add("open");
-				const r = box.getBoundingClientRect(), k = r.width / 1000;
 				bubble.innerHTML = "<small>" + st.date + " · " + st.sub + "</small><h3>" + st.title + "</h3><p>" + st.text + "</p>";
-				bubble.style.left = Math.min(Math.max(st.x * k, 110), r.width - 110) + "px";
-				bubble.style.top = (st.y - 32) * k + "px";
 				bubble.hidden = false;
+				const r = box.getBoundingClientRect(), k = r.width / 1000;
+				const want = st.x * k, half = bubble.offsetWidth / 2;
+				const x = Math.min(Math.max(want, half + 6), r.width - half - 6);
+				bubble.style.left = x + "px";
+				bubble.style.setProperty("--tip", "calc(50% + " + (want - x) + "px)");
+				bubble.style.top = (st.y - 30) * k + "px";
 			}
 			function hide() { if (open) open.classList.remove("open"); open = null; bubble.hidden = true; }
 
-			STOPS.forEach((st) => {
+			STOPS.forEach((st, i) => {
 				const p = road.getPointAtLength(len * st.at);
-				st.x = p.x; st.y = p.y;
+				const x = p.x, y = p.y;
+				st.x = x; st.y = y;
 				const g = el("g", { class: "rm-node " + st.s, tabindex: 0, role: "button", "aria-label": st.title });
-				g.append(el("circle", { class: "ring", cx: p.x, cy: p.y, r: 28 }), el("circle", { class: "dot", cx: p.x, cy: p.y, r: 20 }));
-				const ico = el("text", { class: "ico", x: p.x, y: p.y + 1 }); ico.textContent = st.ico; g.append(ico);
-				const dy = p.y > 200 ? 58 : -64;
-				const d = el("text", { class: "date", x: p.x, y: p.y + dy }); d.textContent = st.date;
-				const s = el("text", { class: "sub", x: p.x, y: p.y + dy + 20 }); s.textContent = st.sub;
+				g.append(el("circle", { class: "halo", cx: x, cy: y, r: 30 }));
+				const bob = el("g", { class: "bob" });
+				bob.append(
+					el("circle", { class: "base", cx: x, cy: y + 4, r: 31 }),
+					el("circle", { class: "ring", cx: x, cy: y, r: 29 }),
+					el("circle", { class: "core", cx: x, cy: y, r: 21 }),
+					el("ellipse", { class: "gloss", cx: x - 5, cy: y - 9, rx: 11, ry: 6 })
+				);
+				if (st.s === "done") {
+					bob.append(el("path", { class: "mark", d: "M" + (x - 9) + "," + (y + 1) + " l6,7 l12,-14" }));
+				} else {
+					const n = el("text", { class: "num", x: x, y: y + 1 }); n.textContent = i + 1; bob.append(n);
+				}
+				g.append(bob);
+
+				// Date tag beside the ball: above on the top row, below everywhere else.
+				const ty = y < 200 ? y - 92 : y + 44;
+				g.append(el("rect", { class: "tag", x: x - 62, y: ty, width: 124, height: 50, rx: 10 }));
+				const d = el("text", { class: "date", x: x, y: ty + 24 }); d.textContent = st.date;
+				const s = el("text", { class: "sub", x: x, y: ty + 42 }); s.textContent = st.sub;
 				g.append(d, s);
+
 				g.addEventListener("mouseenter", () => show(g, st));
 				g.addEventListener("mouseleave", hide);
 				g.addEventListener("focus", () => show(g, st));

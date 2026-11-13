@@ -37,6 +37,37 @@
 			.rm-stop.done span, .rm-stop.now span { color: var(--green); }
 			@keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(92,194,74,.08); } }
 
+
+			/* stats strip */
+			.rm-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 28px; }
+			.rm-stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; text-align: center; }
+			.rm-stat b { display: block; font-size: 1.5rem; font-weight: 900; color: var(--green); }
+			.rm-stat span { font-size: .75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+
+			/* winding path */
+			.rm-path { position: relative; background: rgba(255,255,255,.03); border: 1px solid var(--line); border-radius: 12px; margin: 0 0 8px; }
+			.rm-path svg { display: block; width: 100%; height: auto; overflow: visible; }
+			.rm-road { fill: none; stroke: #e6e6e6; stroke-width: 14; stroke-linecap: round; stroke-linejoin: round; }
+			.rm-road-green { stroke: var(--green); transition: stroke-dashoffset 1.6s ease-out; }
+			.rm-trail { fill: none; stroke: #e6e6e6; stroke-width: 14; stroke-linecap: round; stroke-dasharray: 2 34; }
+			.rm-node { cursor: pointer; outline: none; }
+			.rm-node .ring { fill: #f2f2f2; transition: r .15s; }
+			.rm-node .dot { fill: #a9a9a9; transition: r .15s; }
+			.rm-node.done .dot, .rm-node.now .dot { fill: var(--green); }
+			.rm-node.now .ring { fill: #fff; filter: drop-shadow(0 0 10px rgba(92,194,74,.9)); }
+			.rm-node:hover .ring, .rm-node:focus .ring, .rm-node.open .ring { r: 32; }
+			.rm-node:hover .dot, .rm-node:focus .dot, .rm-node.open .dot { r: 23; }
+			.rm-node .ico { font-size: 22px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+			.rm-node .date { fill: var(--text); font: 900 22px Nunito, sans-serif; text-anchor: middle; }
+			.rm-node .sub { fill: var(--muted); font: 800 15px Nunito, sans-serif; text-anchor: middle; text-transform: uppercase; letter-spacing: .05em; }
+			.rm-node.done .sub, .rm-node.now .sub { fill: var(--green); }
+			.rm-bubble { position: absolute; z-index: 5; width: 250px; transform: translate(-50%, calc(-100% - 22px)); background: #fff; color: #1d1d1d; border-radius: 12px; padding: 12px 14px; box-shadow: 0 10px 30px rgba(0,0,0,.45); pointer-events: none; }
+			.rm-bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; margin-left: -9px; border: 9px solid transparent; border-bottom: 0; border-top-color: #fff; }
+			.rm-bubble h3 { margin: 0 0 4px; font-size: 1rem; font-weight: 900; }
+			.rm-bubble small { display: inline-block; margin-bottom: 6px; font-weight: 900; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: #2c7a20; }
+			.rm-bubble p { margin: 0; font-size: .88rem; line-height: 1.4; color: #444; }
+			.rm-hint { text-align: center; color: var(--muted); font-size: .8rem; margin: 0 0 40px; }
+
 			/* phase cards */
 			.rm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
 			.rm-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s; }
@@ -71,6 +102,8 @@
 				.rm-bar { top: 16px; }
 				.rm-stop span { font-size: .6rem; }
 				.rm-grid { grid-template-columns: 1fr; }
+				.rm-stats { grid-template-columns: 1fr 1fr; }
+				.rm-bubble { width: 190px; }
 			}
 		</style>
 	</head>
@@ -92,17 +125,23 @@
 				<p>Where Recall has been &mdash; and where it's headed.</p>
 			</section>
 
-			<div class="rm-track" aria-hidden="true">
-				<div class="rm-bar"><i></i></div>
-				<ol class="rm-stops">
-					<li class="rm-stop done"><b>✓</b><span>Oct</span></li>
-					<li class="rm-stop now"><b>⚙️</b><span>Nov &middot; Now</span></li>
-					<li class="rm-stop"><b>🚀</b><span>Dec</span></li>
-					<li class="rm-stop"><b>🎮</b><span>2027</span></li>
-					<li class="rm-stop"><b>🛠️</b><span>Later</span></li>
-					<li class="rm-stop"><b>🧍</b><span>Later</span></li>
-				</ol>
+			<div class="rm-stats">
+				<div class="rm-stat"><b data-days>&ndash;</b><span>days until release</span></div>
+				<div class="rm-stat"><b>2 / 6</b><span>milestones reached</span></div>
+				<div class="rm-stat"><b>Server &amp; UI</b><span>working on now</span></div>
+				<div class="rm-stat"><b>Quest + PC</b><span>launch platforms</span></div>
 			</div>
+
+			<div class="rm-path" data-path>
+				<svg viewBox="0 0 1000 640" role="img" aria-label="Recall roadmap path">
+					<path class="rm-road" id="rm-road" d="M40,125 Q70,110 180,110 L700,110 Q880,110 880,220 Q880,330 760,335 L460,345 Q180,345 170,450 Q165,550 320,555 L760,560" />
+					<path class="rm-road rm-road-green" d="M40,125 Q70,110 180,110 L700,110 Q880,110 880,220 Q880,330 760,335 L460,345 Q180,345 170,450 Q165,550 320,555 L760,560" />
+					<path class="rm-trail" d="M800,560 Q900,556 930,610" />
+					<g data-nodes></g>
+				</svg>
+				<div class="rm-bubble" data-bubble hidden></div>
+			</div>
+			<p class="rm-hint">Hover or tap a stop to see the goal.</p>
 
 			<div class="rm-grid">
 				<article class="rm-card done">
@@ -190,6 +229,65 @@
 			<p><a href="index.html">Back to the front page</a></p>
 		</footer>
 
+		<script>
+			const STOPS = [
+				{ at: 0.10, s: "done", ico: "🌱", date: "Early Oct", sub: "Done", title: "The Start", text: "Recall kicks off: the 2026 client boots on our own server and the first rooms load." },
+				{ at: 0.27, s: "now", ico: "⚙️", date: "Late Nov", sub: "Now", title: "Server & UI Upgrades", text: "Faster, more stable servers and the new lime Recall look across menus, loading screens and this website." },
+				{ at: 0.465, s: "", ico: "🚀", date: "Dec", sub: "Release", title: "Planned Release", text: "Early to late December: Recall opens to players on Quest and PC." },
+				{ at: 0.62, s: "", ico: "🎮", date: "2027", sub: "Originals", title: "Recall Original Games", text: "Brand-new games and rooms made by the Recall team." },
+				{ at: 0.79, s: "", ico: "🛠️", date: "Later", sub: "Studio", title: "Rec Room Studio", text: "Build and publish your own rooms with Studio and creator tools." },
+				{ at: 0.95, s: "", ico: "🧍", date: "Later", sub: "Avatars", title: "Avatar Studio & More", text: "Custom avatar items, and whatever the community asks for next." },
+			];
+			const NS = "http://www.w3.org/2000/svg";
+			const box = document.querySelector("[data-path]");
+			const road = document.getElementById("rm-road");
+			const green = box.querySelector(".rm-road-green");
+			const nodes = box.querySelector("[data-nodes]");
+			const bubble = box.querySelector("[data-bubble]");
+			const len = road.getTotalLength();
+			const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+
+			// Green progress runs a little past the "now" stop, drawn in on load.
+			const now = STOPS.find((x) => x.s === "now");
+			green.style.strokeDasharray = len;
+			green.style.strokeDashoffset = len;
+			requestAnimationFrame(() => requestAnimationFrame(() => (green.style.strokeDashoffset = len * (1 - (now.at + 0.07)))));
+
+			let open = null;
+			function show(g, st) {
+				if (open) open.classList.remove("open");
+				open = g; g.classList.add("open");
+				const r = box.getBoundingClientRect(), k = r.width / 1000;
+				bubble.innerHTML = "<small>" + st.date + " · " + st.sub + "</small><h3>" + st.title + "</h3><p>" + st.text + "</p>";
+				bubble.style.left = Math.min(Math.max(st.x * k, 110), r.width - 110) + "px";
+				bubble.style.top = (st.y - 32) * k + "px";
+				bubble.hidden = false;
+			}
+			function hide() { if (open) open.classList.remove("open"); open = null; bubble.hidden = true; }
+
+			STOPS.forEach((st) => {
+				const p = road.getPointAtLength(len * st.at);
+				st.x = p.x; st.y = p.y;
+				const g = el("g", { class: "rm-node " + st.s, tabindex: 0, role: "button", "aria-label": st.title });
+				g.append(el("circle", { class: "ring", cx: p.x, cy: p.y, r: 28 }), el("circle", { class: "dot", cx: p.x, cy: p.y, r: 20 }));
+				const ico = el("text", { class: "ico", x: p.x, y: p.y + 1 }); ico.textContent = st.ico; g.append(ico);
+				const dy = p.y > 200 ? 58 : -64;
+				const d = el("text", { class: "date", x: p.x, y: p.y + dy }); d.textContent = st.date;
+				const s = el("text", { class: "sub", x: p.x, y: p.y + dy + 20 }); s.textContent = st.sub;
+				g.append(d, s);
+				g.addEventListener("mouseenter", () => show(g, st));
+				g.addEventListener("mouseleave", hide);
+				g.addEventListener("focus", () => show(g, st));
+				g.addEventListener("blur", hide);
+				g.addEventListener("click", (e) => { e.stopPropagation(); open === g ? hide() : show(g, st); });
+				nodes.append(g);
+			});
+			document.addEventListener("click", hide);
+
+			// Countdown to the start of December.
+			const days = Math.ceil((new Date(2026, 11, 1) - new Date()) / 864e5);
+			document.querySelector("[data-days]").textContent = days > 0 ? days : "Out now";
+		</script>
 		<script src="site.js"></script>
 		<script src="search.js"></script>
 	</body>

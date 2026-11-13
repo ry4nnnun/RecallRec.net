@@ -41,7 +41,7 @@
 			/* road: dark casing, light surface, dashed centre lane */
 			.rm-case { fill: none; stroke: #121212; stroke-width: 34; stroke-linecap: round; stroke-linejoin: round; }
 			.rm-road { fill: none; stroke: #d9d9d9; stroke-width: 24; stroke-linecap: round; stroke-linejoin: round; }
-			.rm-green { fill: none; stroke: url(#rm-g); stroke-width: 24; stroke-linecap: round; stroke-linejoin: round; transition: stroke-dashoffset 1.8s cubic-bezier(.3,.7,.2,1); }
+			.rm-green { fill: none; stroke: url(#rm-g); stroke-width: 24; stroke-linecap: round; stroke-linejoin: round; }
 			.rm-lane { fill: none; stroke: rgba(0,0,0,.18); stroke-width: 3; stroke-dasharray: 14 16; stroke-linecap: round; }
 			.rm-shine { fill: none; stroke: rgba(255,255,255,.35); stroke-width: 4; stroke-linecap: round; transform: translateY(-6px); }
 			.rm-trail { fill: none; stroke: #d9d9d9; stroke-width: 16; stroke-linecap: round; stroke-dasharray: 1 36; }
@@ -156,7 +156,9 @@
 			const now = STOPS.find((x) => x.s === "now");
 			green.style.strokeDasharray = len + " " + len;
 			green.style.strokeDashoffset = len;
-			requestAnimationFrame(() => requestAnimationFrame(() => (green.style.strokeDashoffset = len * (1 - (now.at + 0.06)))));
+			green.getBoundingClientRect();
+			green.style.transition = "stroke-dashoffset 1.8s cubic-bezier(.3,.7,.2,1)";
+			requestAnimationFrame(() => (green.style.strokeDashoffset = len * (1 - (now.at + 0.06))));
 
 			let open = null;
 			function show(g, st) {
